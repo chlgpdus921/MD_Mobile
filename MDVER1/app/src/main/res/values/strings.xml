@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MD</string>
+
+    <string-array name="carIssue_array">
+        <item>Bad Ball Joint</item>
+        <item>Bad Brake Pad</item>
+        <item>Engine running without oil+ Engine seizing  up</item>
+        <item>Failing Water Pump</item>
+        <item>Hole in Muffler</item>
+    </string-array>
+</resources>
