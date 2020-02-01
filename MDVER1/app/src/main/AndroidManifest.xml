@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".how_to_use"></activity>
         <activity android:name=".purpose" />
-        <activity android:name=".submit" />
+        <activity android:name=".SubmitActivity" />
         <activity android:name=".CarIssueActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         submit_page.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this, submit.class);
+                Intent intent=new Intent(MainActivity.this, SubmitActivity.class);
                 startActivity(intent);
                 //  finish();
             }

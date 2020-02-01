@@ -27,11 +27,11 @@ dependencies {
 
     //listview
     implementation 'me.relex:circleindicator:2.1.4'
-    //audio
-    implementation 'com.github.adrielcafe:AndroidAudioRecorder:0.3.0'
 
+    implementation 'com.github.zzz40500:android-shapeLoadingView:1.0.3.2'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation project(path: ':AndroidAudioRecorder')
 }
