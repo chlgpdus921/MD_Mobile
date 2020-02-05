@@ -36,12 +36,12 @@ public class CarIssuePagerAdapter extends PagerAdapter {
 
         ImageView imageView = new ImageView(view.getContext());
         int[] issueImage = new int[]{
-                R.drawable.car_issue_list,
-                R.drawable.car_issue_list,
-                R.drawable.car_issue_list,
-                R.drawable.car_issue_list,
-                R.drawable.car_issue_list
-        };
+                R.drawable.ball_joint_problem,
+                R.drawable.bad_brake_pad,
+                R.drawable.no_oil,
+                R.drawable.failing_water_pump,
+                R.drawable.hole
+};
         imageView.setImageResource(issueImage[position]);
         view.addView(imageView, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
