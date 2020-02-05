@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,14 +21,21 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.mingle.widget.LoadingView;
 
-import java.io.DataOutputStream;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
@@ -40,9 +48,6 @@ public class SubmitActivity extends AppCompatActivity {
     private static final int REQUEST_RECORD_AUDIO = 0;
     private static final String AUDIO_FILE_PATH =
             Environment.getExternalStorageDirectory().getAbsolutePath() + "/recorded_audio.wav";
-    //file upload
-    private int serverResponseCode = 0;
-    private String upLoadServerUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +56,6 @@ public class SubmitActivity extends AppCompatActivity {
 
         //check permission
         requestMultiplePermissions();
-        //serverUri
-        upLoadServerUri = "http://192.168.1.122/upload_to_server.php";
 
         setActionBar();
 
@@ -69,7 +72,8 @@ public class SubmitActivity extends AppCompatActivity {
                 Toast.makeText(this, "Audio recorded successfully!", Toast.LENGTH_SHORT).show();
                 new Thread(new Runnable() {
                     public void run() {
-                        uploadFile(AUDIO_FILE_PATH);
+                        NetworkAsync networkTask = new NetworkAsync();
+                        networkTask.execute();
                     }
                 }).start();
                 result();
@@ -91,7 +95,7 @@ public class SubmitActivity extends AppCompatActivity {
                 // Optional
                 .setSource(AudioSource.MIC)
                 .setChannel(AudioChannel.STEREO)
-                .setSampleRate(AudioSampleRate.HZ_48000)
+                .setSampleRate(AudioSampleRate.HZ_44100)
                 .setAutoStart(false)
                 .setKeepDisplayOn(true)
                 // Start recording
@@ -115,125 +119,109 @@ public class SubmitActivity extends AppCompatActivity {
         ca.setActionBar();
     }
 
-    public int uploadFile(final String sourceFileUri) {
-        Log.e("Check","uploadFile");
-        String fileName = sourceFileUri;
+    public class NetworkAsync extends AsyncTask<Void, Void, JSONObject> {
+        final static String TAG = "NetworkAsync";
+        private final String AUDIO_FILE_PATH =
+                Environment.getExternalStorageDirectory().getAbsolutePath() + "/recorded_audio.wav";
 
-        HttpURLConnection conn = null;
-        DataOutputStream dos = null;
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
+        public NetworkAsync(){
+        }
 
-        if (!sourceFile.isFile()) {
-            Log.e("uploadFile", "Source File not exist :" + AUDIO_FILE_PATH);
+        @Override
+        protected void onPreExecute() {
+            Log.i(TAG,"onPreExecute()");
+        }
 
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Log.e("Source File not exist :", ""+ AUDIO_FILE_PATH);
-                }
-            });
+        @Override
+        protected JSONObject doInBackground(Void... voids) {
+            String boundary = "^-----^";
+            String LINE_FEED = "\r\n";
+            String charset = "UTF-8";
+            OutputStream outputStream;
+            PrintWriter writer;
 
-            return 0;
+            JSONObject result = null;
 
-        } else {
+            File file = new File(AUDIO_FILE_PATH);
             try {
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                URL url = new URL(upLoadServerUri);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true); // Allow Inputs
-                conn.setDoOutput(true); // Allow Outputs
-                conn.setUseCaches(false); // Don't use a Cached Copy
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                conn.setRequestProperty("Content-Type",
-                        "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
+                URL url = new URL("http://52.14.78.174:5000/fileUpload");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                dos = new DataOutputStream(conn.getOutputStream());
+                connection.setRequestProperty("Content-Type", "multipart/form-data;charset=utf-8;boundary=" + boundary);
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
+                connection.setConnectTimeout(15000);
 
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-                        + fileName + "\"" + lineEnd);
+                outputStream = connection.getOutputStream();
+                writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
 
-                dos.writeBytes(lineEnd);
+                /** Body에 데이터를 넣어줘야 할경우 없으면 Pass **/
+                writer.append("--" + boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"데이터 키값\"").append(LINE_FEED);
+                writer.append("Content-Type: text/plain; charset=" + charset).append(LINE_FEED);
+                writer.append(LINE_FEED);
+                writer.append("데이터값").append(LINE_FEED);
+                writer.flush();
 
-                // create a buffer of maximum size
-                bytesAvailable = fileInputStream.available();
+                /** 파일 데이터를 넣는 부분**/
+                writer.append("--" + boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"").append(LINE_FEED);
+                writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName())).append(LINE_FEED);
+                writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+                writer.append(LINE_FEED);
+                writer.flush();
 
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
-
-                // read file and write it into form...
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                while (bytesRead > 0) {
-
-                    dos.write(buffer, 0, bufferSize);
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
+                FileInputStream inputStream = new FileInputStream(file);
+                byte[] buffer = new byte[(int) file.length()];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
                 }
+                outputStream.flush();
+                inputStream.close();
+                writer.append(LINE_FEED);
+                writer.flush();
 
-                // send multipart form data necesssary after file data...
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                writer.append("--" + boundary + "--").append(LINE_FEED);
+                writer.close();
 
-                // Responses from the server (code and message)
-                serverResponseCode = conn.getResponseCode();
-                String serverResponseMessage = conn.getResponseMessage();
-
-                Log.i("uploadFile", "HTTP Response is : "
-                        + serverResponseMessage + ": " + serverResponseCode);
-
-                if (serverResponseCode == 200) {
-
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(SubmitActivity.this,
-                                    "File Upload Complete.", Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    });
-                }
-
-                // close the streams //
-                fileInputStream.close();
-                dos.flush();
-                dos.close();
-
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(SubmitActivity.this,
-                                "MalformedURLException", Toast.LENGTH_SHORT)
-                                .show();
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
                     }
-                });
+                    in.close();
 
-                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-            } catch (Exception e) {
+                    try {
+                        result = new JSONObject(response.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    result = new JSONObject(response.toString());
+                }
+
+            } catch (ConnectException e) {
+                Log.e(TAG, "ConnectException");
                 e.printStackTrace();
 
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(SubmitActivity.this,
-                                "Got Exception : see logcat ",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-                Log.e("server Exception",
-                        "Exception : " + e.getMessage(), e);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            return serverResponseCode;
+
+            return result;
         }
     }
     private void  requestMultiplePermissions(){
