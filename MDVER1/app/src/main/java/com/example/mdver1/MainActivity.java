@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         how_to_use_page.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this, how_to_use.class);
+                Intent intent=new Intent(MainActivity.this, howtouse.class);
                 startActivity(intent);
                 //  finish();
             }
