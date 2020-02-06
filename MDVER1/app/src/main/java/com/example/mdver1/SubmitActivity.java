@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Random;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
@@ -46,8 +48,9 @@ import cafe.adriel.androidaudiorecorder.model.AudioSource;
 
 public class SubmitActivity extends AppCompatActivity {
     private static final int REQUEST_RECORD_AUDIO = 0;
-    private static final String AUDIO_FILE_PATH =
-            Environment.getExternalStorageDirectory().getAbsolutePath() + "/recorded_audio.wav";
+    private static String AUDIO_FILE_PATH =
+            Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+    private String AUDIO_FILE_NAME = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +87,30 @@ public class SubmitActivity extends AppCompatActivity {
         }
     }
 
-    public void recordAudio() {
+    // create random name and set the file name
+    public void makeName() {
+        long now = System.currentTimeMillis();
+        int rnd = 0;
+        Random random = new Random();
+        for (int i = 0; i < 3; i++) {
+            rnd += (int)(random.nextInt(10)) * Math.pow(10, i);
+        }
+        AUDIO_FILE_NAME = Long.toString(now) + Integer.toString(rnd) + ".wav";
+        AUDIO_FILE_PATH += AUDIO_FILE_NAME;
+        Log.i("file name", AUDIO_FILE_PATH);
+        storeName();
+    }
 
+    // store name of wav file in mobile
+    public void storeName() {
+        SharedPreferences sharedPreferences_filename =  getSharedPreferences("wavfilename", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences_filename.edit();
+        editor.putString("name", AUDIO_FILE_NAME);
+        editor.commit();
+    }
+
+    public void recordAudio() {
+        makeName();
         AndroidAudioRecorder.with(this)
                 // Required
                 .setFilePath(AUDIO_FILE_PATH)
@@ -121,8 +146,6 @@ public class SubmitActivity extends AppCompatActivity {
 
     public class NetworkAsync extends AsyncTask<Void, Void, JSONObject> {
         final static String TAG = "NetworkAsync";
-        private final String AUDIO_FILE_PATH =
-                Environment.getExternalStorageDirectory().getAbsolutePath() + "/recorded_audio.wav";
 
         public NetworkAsync(){
         }
