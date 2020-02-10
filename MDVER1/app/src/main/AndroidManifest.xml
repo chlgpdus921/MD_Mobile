@@ -20,11 +20,6 @@
             android:name=".howtouse"
             android:label="@string/title_activity_howtouse"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".how_to_use" />
         <activity android:name=".purpose" />
         <activity android:name=".SubmitActivity" />
         <activity android:name=".CarIssueActivity" />

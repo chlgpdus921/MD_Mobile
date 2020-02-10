@@ -1,13 +1,22 @@
-<resources>
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">MD</string>
 
     <string-array name="carIssue_array">
         <item>Bad Ball Joint</item>
         <item>Bad Brake Pad</item>
-        <item>Engine running without oil+ Engine seizing  up</item>
+        <item>Engine running without oil</item>
         <item>Failing Water Pump</item>
         <item>Hole in Muffler</item>
     </string-array>
+  <string-array name="car_solution">
+      <item>"The inspection results show that there is a problem with the ball point of your car. Remove the car wheel and check your ball point. If you have a big problem, go to the nearest car center and ask for help."</item>
+      <item>"Your brake pad seems to be in trouble as a result of the examination. Remove the wheels of the car and check for any problems with the brake pads. If you have a big problem, go to the nearest car center and ask for help."</item>
+      <item>"The inspection results show that your car is short of oil. Go to the nearest gas station and refuel. If you have a big problem, call the nearest gas station."</item>
+      <item>"Your car's water pump seems to be in trouble as a result of the inspection.Open the hood of the car and check the water pump."
+        "If you have a big problem, go to the nearest car center and ask for help."</item>
+      <item>"Your muffler has a hole in it. Check the underside of the car to see which part has a hole.If you have a big problem, go to the nearest car center and ask for help."</item>
+  </string-array>
+
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"

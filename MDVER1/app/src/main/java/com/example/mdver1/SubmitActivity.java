@@ -12,7 +12,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -65,6 +68,32 @@ public class SubmitActivity extends AppCompatActivity {
         Util.requestPermission(this, Manifest.permission.RECORD_AUDIO);
         Util.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         recordAudio();
+
+        String[] listItem = getResources().getStringArray(R.array.carIssue_array);
+        String[] solutionItem = getResources().getStringArray(R.array.car_solution);
+
+        ImageView imageView = (ImageView)findViewById(R.id.issueImage);
+        TextView causeText = (TextView)findViewById(R.id.cause);
+        TextView solutionText = (TextView)findViewById(R.id.solution);
+        Button button = (Button)findViewById(R.id.exitButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        int[] resultImage = new int[]{
+                R.drawable.ball_joint_problem,
+                R.drawable.bad_brake_pad,
+                R.drawable.no_oil,
+                R.drawable.failing_water_pump,
+                R.drawable.hole
+        };
+
+        imageView.setImageResource(resultImage[2]);
+        causeText.setText(listItem[2]);
+        solutionText.setText(solutionItem[2]);
     }
 
     @Override
