@@ -3,7 +3,6 @@ package com.example.mdver1;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -17,15 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.DexterError;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.PermissionRequestErrorListener;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,7 +30,6 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
 import java.util.Random;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
@@ -60,13 +49,7 @@ public class SubmitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit);
 
-        //check permission
-        requestMultiplePermissions();
-
         setActionBar();
-
-        Util.requestPermission(this, Manifest.permission.RECORD_AUDIO);
-        Util.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         recordAudio();
 
         String[] listItem = getResources().getStringArray(R.array.carIssue_array);
@@ -275,40 +258,5 @@ public class SubmitActivity extends AppCompatActivity {
 
             return result;
         }
-    }
-    private void  requestMultiplePermissions(){
-        Dexter.withActivity(this)
-                .withPermissions(
-
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        // check if all permissions are granted
-                        if (report.areAllPermissionsGranted()) {
-                            Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        // check for permanent denial of any permission
-                        if (report.isAnyPermissionPermanentlyDenied()) {
-                            // show alert dialog navigating to Settings
-
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).
-                withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Toast.makeText(getApplicationContext(), "Some Error! ", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .onSameThread()
-                .check();
     }
 }
