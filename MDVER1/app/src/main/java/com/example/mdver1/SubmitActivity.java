@@ -30,12 +30,9 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-=======
->>>>>>> d1a9b99bafc3f7c5b23f2fd22fa2bed05c5c999b
 import java.util.Random;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
