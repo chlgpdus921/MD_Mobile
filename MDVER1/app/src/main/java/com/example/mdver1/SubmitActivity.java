@@ -30,6 +30,12 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+<<<<<<< HEAD
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+=======
+>>>>>>> d1a9b99bafc3f7c5b23f2fd22fa2bed05c5c999b
 import java.util.Random;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
@@ -231,9 +237,28 @@ public class SubmitActivity extends AppCompatActivity {
                         response.append(inputLine);
                     }
                     in.close();
-
+                    ArrayList<String> result2 = new ArrayList<String>();
                     try {
                         result = new JSONObject(response.toString());
+                        Log.i("정보", result+"");
+                        Iterator i = result.keys();
+                        Log.i("정보", result.keys()+"");
+
+                        while(i.hasNext())
+                        {
+                            String b = i.next().toString();
+                            result2.add(b);
+                            Log.i("정보", b+"");
+
+                        }
+
+                        for(int j = 0; j<result2.size();j++) // 추출
+                        {
+                            result2.add(result.getString(result2.get(j)));
+                            Log.i("정보2", result2+"");
+
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -246,6 +271,7 @@ public class SubmitActivity extends AppCompatActivity {
                     }
                     in.close();
                     result = new JSONObject(response.toString());
+                    Log.i("정보", result+"");
                 }
 
             } catch (ConnectException e) {
