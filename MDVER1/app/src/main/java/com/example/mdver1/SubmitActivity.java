@@ -159,7 +159,7 @@ public class SubmitActivity extends AppCompatActivity {
                 submitlayout.setVisibility(View.VISIBLE);
                 setOutput();
             }
-        }, 7000);
+        }, 5000);
     }
 
     // set output

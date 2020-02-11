@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_foreground"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".howtouse"
             android:label="@string/title_activity_howtouse"

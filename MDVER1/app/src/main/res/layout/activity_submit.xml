@@ -38,17 +38,10 @@
             android:src="@drawable/failing_water_pump" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:text="Cause :                          "
-            android:textSize="25dp" />
-
-        <TextView
             android:id = "@+id/cause"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:gravity="center"
             android:text="bad brake pad"
             android:textSize="25dp" />
@@ -60,7 +53,7 @@
             android:layout_margin="10dp"
             android:gravity="center"
             android:text="other_cause"
-            android:textSize="13dp" />
+            android:textSize="15dp" />
 
         <TextView
             android:id = "@+id/solution"
@@ -70,7 +63,7 @@
             android:gravity="center"
             android:text="Check brake pad!!!\nGo to the car center"
             android:textColor="@color/red"
-            android:textSize="13dp" />
+            android:textSize="15dp" />
 
         <Button
             android:id ="@+id/exitButton"
