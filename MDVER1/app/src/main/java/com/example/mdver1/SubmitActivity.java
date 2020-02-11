@@ -32,7 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
@@ -43,9 +43,14 @@ import cafe.adriel.androidaudiorecorder.model.AudioSource;
 
 public class SubmitActivity extends AppCompatActivity {
     private static final int REQUEST_RECORD_AUDIO = 0;
-    private static String AUDIO_FILE_PATH =
-            Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+    private String AUDIO_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     private String AUDIO_FILE_NAME = "";
+
+    ImageView imageView;
+    TextView causeText, solutionText, otherText;
+    String[] listItem, solutionItem;
+    int[] resultImage;
+    ArrayList<String> output;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,21 +60,9 @@ public class SubmitActivity extends AppCompatActivity {
         setActionBar();
         recordAudio();
 
-        String[] listItem = getResources().getStringArray(R.array.carIssue_array);
-        String[] solutionItem = getResources().getStringArray(R.array.car_solution);
-
-        ImageView imageView = (ImageView)findViewById(R.id.issueImage);
-        TextView causeText = (TextView)findViewById(R.id.cause);
-        TextView solutionText = (TextView)findViewById(R.id.solution);
-        Button button = (Button)findViewById(R.id.exitButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        int[] resultImage = new int[]{
+        listItem = getResources().getStringArray(R.array.carIssue_array);
+        solutionItem = getResources().getStringArray(R.array.car_solution);
+        resultImage = new int[]{
                 R.drawable.ball_joint_problem,
                 R.drawable.bad_brake_pad,
                 R.drawable.no_oil,
@@ -77,9 +70,18 @@ public class SubmitActivity extends AppCompatActivity {
                 R.drawable.hole
         };
 
-        imageView.setImageResource(resultImage[2]);
-        causeText.setText(listItem[2]);
-        solutionText.setText(solutionItem[2]);
+        imageView = (ImageView)findViewById(R.id.issueImage);
+        causeText = (TextView)findViewById(R.id.cause);
+        solutionText = (TextView)findViewById(R.id.solution);
+        otherText = (TextView)findViewById(R.id.other_cause);
+        Button button = (Button)findViewById(R.id.exitButton);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -100,6 +102,11 @@ public class SubmitActivity extends AppCompatActivity {
                 Toast.makeText(this, "Audio was not recorded", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void setActionBar() {
+        CustomActionBar ca = new CustomActionBar(this, getSupportActionBar());
+        ca.setActionBar();
     }
 
     // create random name and set the file name
@@ -150,24 +157,44 @@ public class SubmitActivity extends AppCompatActivity {
                 LinearLayout submitlayout = (LinearLayout)findViewById(R.id.submitlayout);
                 loadlayout.setVisibility(View.INVISIBLE);
                 submitlayout.setVisibility(View.VISIBLE);
+                setOutput();
             }
-        }, 3000);
+        }, 7000);
     }
 
-    private void setActionBar() {
-        CustomActionBar ca = new CustomActionBar(this, getSupportActionBar());
-        ca.setActionBar();
+    // set output
+    public void setOutput() {
+        int i = findOutput(0);
+
+        imageView.setImageResource(resultImage[i]);
+        causeText.setText(listItem[i] + " (" + String.format(Locale.KOREAN, "%.2f", Double.parseDouble(output.get(3))) + "%)");
+        solutionText.setText(solutionItem[i]);
+
+        String str = "" + listItem[findOutput(1)] + " (" + String.format(Locale.KOREAN, "%.2f", Double.parseDouble(output.get(4))) + "%)" + "\n"
+                + listItem[findOutput(2)] + " (" + String.format(Locale.KOREAN, "%.2f", Double.parseDouble(output.get(5))) + "%)";
+
+        otherText.setText(str);
+    }
+
+    // find output
+    public int findOutput(int i) {
+        switch (output.get(i)) {
+            case "bad_ball_joint": return 0;
+            case "bad_brake_pad": return 1;
+            case "engine_seizing_up": return 2;
+            case "failing_water_pump": return 3;
+            case "hole_in_muffler": return 4;
+            default: return 5;
+        }
     }
 
     public class NetworkAsync extends AsyncTask<Void, Void, JSONObject> {
-        final static String TAG = "NetworkAsync";
-
         public NetworkAsync(){
         }
 
         @Override
         protected void onPreExecute() {
-            Log.i(TAG,"onPreExecute()");
+            Log.i("Check NetworkAsync","onPreExecute()");
         }
 
         @Override
@@ -230,30 +257,30 @@ public class SubmitActivity extends AppCompatActivity {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String inputLine;
                     StringBuffer response = new StringBuffer();
+
                     while ((inputLine = in.readLine()) != null) {
                         response.append(inputLine);
                     }
                     in.close();
-                    ArrayList<String> result2 = new ArrayList<String>();
+
+                    output = new ArrayList<String>();
                     try {
                         result = new JSONObject(response.toString());
-                        Log.i("정보", result+"");
+                        Log.i("Check result", result+"");
                         Iterator i = result.keys();
-                        Log.i("정보", result.keys()+"");
+                        Log.i("Check result", result.keys()+"");
 
                         while(i.hasNext())
                         {
                             String b = i.next().toString();
-                            result2.add(b);
-                            Log.i("정보", b+"");
-
+                            output.add(b);
+                            Log.i("Check string b", b+"");
                         }
 
-                        for(int j = 0; j<result2.size();j++) // 추출
+                        for(int j = 0; j<output.size();j++) // 추출
                         {
-                            result2.add(result.getString(result2.get(j)));
-                            Log.i("정보2", result2+"");
-
+                            output.add(result.getString(output.get(j)));
+                            Log.i("Check output", output+"");
                         }
 
                     } catch (JSONException e) {
@@ -268,17 +295,16 @@ public class SubmitActivity extends AppCompatActivity {
                     }
                     in.close();
                     result = new JSONObject(response.toString());
-                    Log.i("정보", result+"");
+                    Log.i("CHeck result", result+"");
                 }
 
             } catch (ConnectException e) {
-                Log.e(TAG, "ConnectException");
+                Log.e("Check NetworkAsync", "ConnectException");
                 e.printStackTrace();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             return result;
         }
     }
