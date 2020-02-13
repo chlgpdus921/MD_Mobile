@@ -18,6 +18,14 @@
         <item>Engine running without oil</item>
         <item>Failing Water Pump</item>
         <item>Hole in Muffler</item>
+    </string-array>
+
+    <string-array name="carSubmit_array">
+        <item>Bad Ball Joint</item>
+        <item>Bad Brake Pad</item>
+        <item>Engine running without oil</item>
+        <item>Failing Water Pump</item>
+        <item>Hole in Muffler</item>
         <item>No Problem</item>
     </string-array>
   <string-array name="car_solution">

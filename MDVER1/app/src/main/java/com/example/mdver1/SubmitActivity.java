@@ -60,7 +60,7 @@ public class SubmitActivity extends AppCompatActivity {
         setActionBar();
         recordAudio();
 
-        listItem = getResources().getStringArray(R.array.carIssue_array);
+        listItem = getResources().getStringArray(R.array.carSubmit_array);
         solutionItem = getResources().getStringArray(R.array.car_solution);
         resultImage = new int[]{
                 R.drawable.ball_joint_problem,
