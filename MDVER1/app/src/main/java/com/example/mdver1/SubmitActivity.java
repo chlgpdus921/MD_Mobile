@@ -67,7 +67,8 @@ public class SubmitActivity extends AppCompatActivity {
                 R.drawable.bad_brake_pad,
                 R.drawable.no_oil,
                 R.drawable.failing_water_pump,
-                R.drawable.hole
+                R.drawable.hole,
+                R.drawable.no_problem
         };
 
         imageView = (ImageView)findViewById(R.id.issueImage);
@@ -159,7 +160,7 @@ public class SubmitActivity extends AppCompatActivity {
                 submitlayout.setVisibility(View.VISIBLE);
                 setOutput();
             }
-        }, 5000);
+        }, 7000);
     }
 
     // set output
@@ -199,7 +200,7 @@ public class SubmitActivity extends AppCompatActivity {
 
         @Override
         protected JSONObject doInBackground(Void... voids) {
-            String boundary = "^-----^";
+            String boundary = "-----";
             String LINE_FEED = "\r\n";
             String charset = "UTF-8";
             OutputStream outputStream;
@@ -222,15 +223,14 @@ public class SubmitActivity extends AppCompatActivity {
                 outputStream = connection.getOutputStream();
                 writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
 
-                /** Body에 데이터를 넣어줘야 할경우 없으면 Pass **/
                 writer.append("--" + boundary).append(LINE_FEED);
-                writer.append("Content-Disposition: form-data; name=\"데이터 키값\"").append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"data key value\"").append(LINE_FEED);
                 writer.append("Content-Type: text/plain; charset=" + charset).append(LINE_FEED);
                 writer.append(LINE_FEED);
-                writer.append("데이터값").append(LINE_FEED);
+                writer.append("data value").append(LINE_FEED);
                 writer.flush();
 
-                /** 파일 데이터를 넣는 부분**/
+                /** feed input file data **/
                 writer.append("--" + boundary).append(LINE_FEED);
                 writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"").append(LINE_FEED);
                 writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName())).append(LINE_FEED);
@@ -295,7 +295,7 @@ public class SubmitActivity extends AppCompatActivity {
                     }
                     in.close();
                     result = new JSONObject(response.toString());
-                    Log.i("CHeck result", result+"");
+                    Log.i("Check result", result+"");
                 }
 
             } catch (ConnectException e) {

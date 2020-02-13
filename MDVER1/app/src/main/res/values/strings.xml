@@ -18,6 +18,7 @@
         <item>Engine running without oil</item>
         <item>Failing Water Pump</item>
         <item>Hole in Muffler</item>
+        <item>No Problem</item>
     </string-array>
   <string-array name="car_solution">
       <item>"The inspection results show that there is a problem with the ball point of your car. Remove the car wheel and check your ball point. If you have a big problem, go to the nearest car center and ask for help."</item>
@@ -26,6 +27,7 @@
       <item>"Your car's water pump seems to be in trouble as a result of the inspection.Open the hood of the car and check the water pump."
         "If you have a big problem, go to the nearest car center and ask for help."</item>
       <item>"Your muffler has a hole in it. Check the underside of the car to see which part has a hole.If you have a big problem, go to the nearest car center and ask for help."</item>
+      <item>"Nothing"</item>
   </string-array>
 
     <string name="title_activity_scrolling">ScrollingActivity</string>
